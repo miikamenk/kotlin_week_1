@@ -4,20 +4,50 @@ package com.miikamenk.todo.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import com.miikamenk.todo.domain.Task
-import com.miikamenk.todo.domain.addTask
-import com.miikamenk.todo.domain.sortByDueDate
-import com.miikamenk.todo.domain.toggleDone
-import com.miikamenk.todo.domain.TaskRepository
 import java.time.LocalDate
+import com.miikamenk.todo.viewmodel.TaskViewModel
+import androidx.compose.material3.OutlinedTextField
+
 
 @Composable
-fun HomeScreen() {
-    var tasks by remember { mutableStateOf(TaskRepository.mockTasks) }
+fun TaskTextField(
+    task: String,
+    onTaskChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = task,
+        onValueChange = onTaskChange,
+        label = { Text("Task") },
+    )
+}
+
+@Composable
+fun DescriptionTextField(
+    description: String,
+    onDescriptionChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = description,
+        onValueChange = onDescriptionChange,
+        label = { Text("Description") },
+    )
+}
+
+@Composable
+fun HomeScreen(
+    taskViewModel: TaskViewModel
+) {
+    val tasks by taskViewModel.tasks
+
+    var taskText by remember { mutableStateOf("") }
+    var descriptionText by remember { mutableStateOf("") }
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -30,46 +60,78 @@ fun HomeScreen() {
         )
 
         // Buttons to manipulate tasks
+        TaskTextField(
+            task = taskText,
+            onTaskChange = { taskText = it }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        DescriptionTextField(
+            description = descriptionText,
+            onDescriptionChange = { descriptionText = it }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
-                val newTask = Task(
-                    id = (tasks.maxOfOrNull { it.id } ?: 0) + 1,
-                    title = "New Task",
-                    description = "A simple task",
-                    priority = 1,
-                    dueDate = LocalDate.now(),
-                    done = false
-                )
-                tasks = addTask(tasks, newTask)
+                if (taskText.isNotBlank()) {
+                    val newTask = Task(
+                        id = 0,
+                        title = taskText,
+                        description = descriptionText,
+                        priority = 1,
+                        dueDate = LocalDate.now(),
+                        done = false
+                    )
+                    taskViewModel.addTask(newTask)
+
+                    taskText = ""
+                    descriptionText = ""
+                }
             }) {
                 Text("Add Task")
             }
 
-            Button(onClick = { tasks = sortByDueDate(tasks) }) {
+            Button(onClick = { taskViewModel.sortByDueDate() }) {
                 Text("Sort by Due Date")
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        tasks.forEach { task ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Text(text = if (task.done) "X" else "O", modifier = Modifier.padding(end = 8.dp))
+        LazyColumn {
+            items(tasks) { task ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                Column {
-                    Text(text = task.title)
-                    Text(text = task.description, fontSize = 12.sp)
-                    Text(text = "Due: ${task.dueDate}", fontSize = 12.sp)
-                }
+                    Checkbox(
+                        checked = task.done,
+                        onCheckedChange = {
+                            taskViewModel.toggleDone(task.id)
+                        }
+                    )
 
-                Spacer(modifier = Modifier.weight(1f))
+                    Column(
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) {
+                        Text(text = task.title)
+                        Text(text = task.description, fontSize = 12.sp)
+                        Text(text = "Due: ${task.dueDate}", fontSize = 12.sp)
+                    }
 
-                Button(onClick = { tasks = toggleDone(tasks, task.id) }) {
-                    Text("Toggle")
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Button(
+                        onClick = { taskViewModel.removeTask(task.id) }
+                    ) {
+                        Text("Delete")
+                    }
                 }
             }
         }
