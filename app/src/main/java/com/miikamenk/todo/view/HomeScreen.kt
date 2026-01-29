@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyColumn
-import com.miikamenk.todo.domain.Task
+import com.miikamenk.todo.model.Task
 import java.time.LocalDate
 import com.miikamenk.todo.viewmodel.TaskViewModel
 import androidx.compose.material3.OutlinedTextField

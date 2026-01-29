@@ -5,7 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.miikamenk.todo.domain.Task
+import com.miikamenk.todo.model.Task
 
 @Composable
 fun DetailDialogContent(

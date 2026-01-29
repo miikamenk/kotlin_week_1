@@ -2,11 +2,10 @@ package com.miikamenk.todo.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.miikamenk.todo.domain.Task
-import com.miikamenk.todo.domain.TaskRepository
+import com.miikamenk.todo.model.Task
+import com.miikamenk.todo.model.TaskRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class TaskViewModel : ViewModel() {
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())

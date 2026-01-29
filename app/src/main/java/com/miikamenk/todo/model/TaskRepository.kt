@@ -1,4 +1,4 @@
-package com.miikamenk.todo.domain
+package com.miikamenk.todo.model
 
 import java.time.LocalDate
 
