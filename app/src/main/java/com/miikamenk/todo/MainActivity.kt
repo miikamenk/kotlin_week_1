@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.miikamenk.todo.ui.theme.TodoTheme
 
-import com.miikamenk.todo.ui.HomeScreen
+import com.miikamenk.todo.view.HomeScreen
 import com.miikamenk.todo.viewmodel.TaskViewModel
 
 class MainActivity : ComponentActivity() {
