@@ -56,6 +56,7 @@ fun HomeScreen(
     val tasks by taskViewModel.tasks.collectAsState()
     val showDialog by taskViewModel.showDialog.collectAsState()
     val selectedTask by taskViewModel.selectedTask.collectAsState()
+    val showDoneOnly by taskViewModel.showOnlyDone.collectAsState()
 
     var taskText by remember { mutableStateOf("") }
     var descriptionText by remember { mutableStateOf("") }
@@ -114,7 +115,7 @@ fun HomeScreen(
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { taskViewModel.filterByDoneState() }) {
-                Text("Filter by Done")
+                Text(if (showDoneOnly) "Show Only Unfinished Tasks" else "Show Only Done Tasks")
             }
             Button(onClick = { taskViewModel.showAllTasks() }) {
                 Text("Show all Tasks")

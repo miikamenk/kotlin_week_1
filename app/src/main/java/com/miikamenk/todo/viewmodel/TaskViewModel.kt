@@ -17,6 +17,7 @@ class TaskViewModel : ViewModel() {
     private val _selectedTask = MutableStateFlow<Task?>(null)
     val selectedTask: StateFlow<Task?> = _selectedTask.asStateFlow()
     private val _showOnlyDone = MutableStateFlow(false)
+    val showOnlyDone: StateFlow<Boolean> = _showOnlyDone.asStateFlow()
 
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
