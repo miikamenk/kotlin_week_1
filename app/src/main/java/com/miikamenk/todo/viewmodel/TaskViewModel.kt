@@ -8,18 +8,22 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class TaskViewModel : ViewModel() {
-    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
 
-    val tasks: StateFlow<List<Task>> = _tasks.asStateFlow()
+    private val _allTasks = MutableStateFlow<List<Task>>(emptyList())
+    private val _visibleTasks = MutableStateFlow<List<Task>>(emptyList())
+
+    val tasks: StateFlow<List<Task>> = _visibleTasks.asStateFlow()
 
     private val _selectedTask = MutableStateFlow<Task?>(null)
     val selectedTask: StateFlow<Task?> = _selectedTask.asStateFlow()
+    private val _showOnlyDone = MutableStateFlow(false)
 
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> = _showDialog.asStateFlow()
 
     init {
-        _tasks.value = TaskRepository.mockTasks
+        _allTasks.value = TaskRepository.mockTasks
+        _visibleTasks.value = _allTasks.value
     }
 
     fun selectTask(task: Task) {
@@ -34,14 +38,14 @@ class TaskViewModel : ViewModel() {
 
     fun addTask(task: Task) {
         viewModelScope.launch {
-            val nextId = (_tasks.value.maxOfOrNull { it.id } ?: 0) + 1
-            _tasks.value = _tasks.value + task.copy(id = nextId)
+            val nextId = (_allTasks.value.maxOfOrNull { it.id } ?: 0) + 1
+            _allTasks.value = _allTasks.value + task.copy(id = nextId)
         }
     }
 
     fun toggleDone(id: Int) {
         viewModelScope.launch {
-            _tasks.value = _tasks.value.map { task ->
+            _allTasks.value = _allTasks.value.map { task ->
                 if (task.id == id) {
                     task.copy(done = !task.done)
                 } else {
@@ -53,13 +57,13 @@ class TaskViewModel : ViewModel() {
 
     fun removeTask(id: Int) {
         viewModelScope.launch {
-            _tasks.value = _tasks.value.filterNot { it.id == id }
+            _allTasks.value = _allTasks.value.filterNot { it.id == id }
         }
     }
 
     fun updateTask(updatedTask: Task) {
         viewModelScope.launch {
-            _tasks.value = _tasks.value.map { task ->
+            _allTasks.value = _allTasks.value.map { task ->
                 if (task.id == updatedTask.id) {
                     updatedTask
                 } else {
@@ -70,9 +74,19 @@ class TaskViewModel : ViewModel() {
         }
     }
 
+    fun showAllTasks() {
+        _showOnlyDone.value = false
+        _visibleTasks.value = _allTasks.value
+    }
+
+    fun filterByDoneState() {
+        _showOnlyDone.value = !_showOnlyDone.value
+        _visibleTasks.value = _allTasks.value.filter { it.done == _showOnlyDone.value }
+    }
+
     fun sortByDueDate() {
         viewModelScope.launch {
-            _tasks.value = _tasks.value.sortedBy { it.dueDate }
+            _allTasks.value = _allTasks.value.sortedBy { it.dueDate }
         }
     }
 }

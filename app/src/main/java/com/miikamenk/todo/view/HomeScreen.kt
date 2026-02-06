@@ -112,6 +112,15 @@ fun HomeScreen(
             }
         }
 
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { taskViewModel.filterByDoneState() }) {
+                Text("Filter by Done")
+            }
+            Button(onClick = { taskViewModel.showAllTasks() }) {
+                Text("Show all Tasks")
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn {
