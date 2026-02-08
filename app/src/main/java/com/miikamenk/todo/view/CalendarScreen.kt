@@ -9,8 +9,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.collectAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.automirrored.filled.List
@@ -27,6 +27,7 @@ fun CalendarScreen(
     val tasks by taskViewModel.tasks.collectAsState()
     val showDialog by taskViewModel.showDialog.collectAsState()
     val selectedTask by taskViewModel.selectedTask.collectAsState()
+    val showAddDialog by taskViewModel.showAddDialog.collectAsState()
 
     // Group tasks by due date
     val tasksByDate = tasks.groupBy { it.dueDate }
@@ -38,6 +39,12 @@ fun CalendarScreen(
         TopAppBar(
             title = { Text("Calendar") },
             actions = {
+                IconButton(onClick = { taskViewModel.openAddDialog() }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add task"
+                    )
+                }
                 IconButton(onClick = { navController.navigate("home") }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.List,
@@ -116,7 +123,8 @@ fun CalendarScreen(
             title = { Text("Edit Task") },
             text = {
                 DetailDialogContent(
-                    task = selectedTask!!,
+                    task = selectedTask,
+                    taskViewModel = taskViewModel,
                     onUpdate = taskViewModel::updateTask,
                     onDelete = {
                         taskViewModel.removeTask(selectedTask!!.id)
@@ -129,6 +137,29 @@ fun CalendarScreen(
                     onClick = { taskViewModel.closeDialog() }
                 ) {
                     Text("Close")
+                }
+            }
+        )
+    }
+
+    // Add task dialog
+    if (showAddDialog) {
+        AlertDialog(
+            onDismissRequest = { taskViewModel.closeAddDialog() },
+            title = { Text("Add New Task") },
+            text = {
+                DetailDialogContent(
+                    task = null,
+                    taskViewModel = taskViewModel,
+                    onUpdate = taskViewModel::updateTask,
+                    onDelete = { }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { taskViewModel.closeAddDialog() }
+                ) {
+                    Text("Cancel")
                 }
             }
         )

@@ -12,10 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.LazyColumn
-import com.miikamenk.todo.model.Task
-import java.time.LocalDate
 import com.miikamenk.todo.viewmodel.TaskViewModel
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.collectAsState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -28,30 +25,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Add
 import androidx.navigation.NavHostController
-
-
-@Composable
-fun TaskTextField(
-    task: String,
-    onTaskChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = task,
-        onValueChange = onTaskChange,
-        label = { Text("Task") },
-    )
-}
-
-@Composable
-fun DescriptionTextField(
-    description: String,
-    onDescriptionChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = description,
-        onValueChange = onDescriptionChange,
-        label = { Text("Description") },
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,10 +38,7 @@ fun HomeScreen(
     val showDialog by taskViewModel.showDialog.collectAsState()
     val selectedTask by taskViewModel.selectedTask.collectAsState()
     val showDoneOnly by taskViewModel.showOnlyDone.collectAsState()
-
-    var taskText by remember { mutableStateOf("") }
-    var descriptionText by remember { mutableStateOf("") }
-    var priority by remember { mutableStateOf(1) }
+    val showAddDialog by taskViewModel.showAddDialog.collectAsState()
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -75,6 +47,12 @@ fun HomeScreen(
         TopAppBar(
             title = { Text("My Tasks") },
             actions = {
+                IconButton(onClick = { taskViewModel.openAddDialog() }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add task"
+                    )
+                }
                 IconButton(onClick = { navController.navigate("calendar") }) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
@@ -85,41 +63,7 @@ fun HomeScreen(
         )
 
         // Buttons to manipulate tasks
-        TaskTextField(
-            task = taskText,
-            onTaskChange = { taskText = it }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        DescriptionTextField(
-            description = descriptionText,
-            onDescriptionChange = { descriptionText = it }
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = {
-                if (taskText.isNotBlank()) {
-                    val newTask = Task(
-                        id = 0,
-                        title = taskText,
-                        description = descriptionText,
-                        priority = priority,
-                        dueDate = LocalDate.now().plusDays(1),
-                        done = false
-                    )
-                    taskViewModel.addTask(newTask)
-
-                    taskText = ""
-                    descriptionText = ""
-                    priority = 1 // Lisää tämä
-                }
-            }) {
-                Text("Add Task")
-            }
-
             Button(onClick = { taskViewModel.sortByDueDate() }) {
                 Text("Sort by Due Date")
             }
@@ -178,26 +122,49 @@ fun HomeScreen(
         }
     }
     if (showDialog && selectedTask != null) {
-    AlertDialog(
-        onDismissRequest = { taskViewModel.closeDialog() },
-        title = { Text("Edit Task") },
-        text = {
-            DetailDialogContent(
-                task = selectedTask!!,
-                onUpdate = taskViewModel::updateTask,
-                onDelete = {
-                    taskViewModel.removeTask(selectedTask!!.id)
-                    taskViewModel.closeDialog()
+        AlertDialog(
+            onDismissRequest = { taskViewModel.closeDialog() },
+            title = { Text("Edit Task") },
+            text = {
+                DetailDialogContent(
+                    task = selectedTask,
+                    taskViewModel = taskViewModel,
+                    onUpdate = taskViewModel::updateTask,
+                    onDelete = {
+                        taskViewModel.removeTask(selectedTask!!.id)
+                        taskViewModel.closeDialog()
+                    }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { taskViewModel.closeDialog() }
+                ) {
+                    Text("Close")
                 }
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = { taskViewModel.closeDialog() }
-            ) {
-                Text("Close")
             }
-        }
-    )
+        )
+    }
+
+    if (showAddDialog) {
+        AlertDialog(
+            onDismissRequest = { taskViewModel.closeAddDialog() },
+            title = { Text("Add New Task") },
+            text = {
+                DetailDialogContent(
+                    task = null,
+                    taskViewModel = taskViewModel,
+                    onUpdate = taskViewModel::updateTask,
+                    onDelete = { }
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { taskViewModel.closeAddDialog() }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
