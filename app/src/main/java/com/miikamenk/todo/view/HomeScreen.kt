@@ -24,7 +24,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.filled.DateRange
+import androidx.navigation.NavHostController
 
 
 @Composable
@@ -49,9 +53,11 @@ fun DescriptionTextField(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    taskViewModel: TaskViewModel
+    taskViewModel: TaskViewModel,
+    navController: NavHostController
 ) {
     val tasks by taskViewModel.tasks.collectAsState()
     val showDialog by taskViewModel.showDialog.collectAsState()
@@ -66,10 +72,16 @@ fun HomeScreen(
         .fillMaxSize()
         .padding(16.dp)
     ) {
-        Text(
-            text = "My Tasks",
-            fontSize = 24.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
+        TopAppBar(
+            title = { Text("My Tasks") },
+            actions = {
+                IconButton(onClick = { navController.navigate("calendar") }) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Go to calendar"
+                    )
+                }
+            }
         )
 
         // Buttons to manipulate tasks
