@@ -14,8 +14,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val viewModel: TaskViewModel = TaskViewModel()
+            val navController = rememberNavController()
             TodoTheme {
                 HomeScreen(taskViewModel = TaskViewModel())
+                AppNavigation(navController, viewModel)
             }
         }
     }
