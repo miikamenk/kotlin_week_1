@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cloud
 import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +58,12 @@ fun HomeScreen(
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = "Go to calendar"
+                    )
+                }
+                IconButton(onClick = { navController.navigate("weather") }) {
+                    Icon(
+                        imageVector = Icons.Default.Cloud,
+                        contentDescription = "Go to weather"
                     )
                 }
             }

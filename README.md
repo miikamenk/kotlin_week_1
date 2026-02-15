@@ -20,3 +20,30 @@ Sovellus käyttää MVVM-arkkitehtuuria. Yksi ViewModel jaetaan HomeScreenin ja 
 CalendarScreen näyttää tehtävät kalenterimaisessa muodossa ryhmittelemällä ne määräpäivän mukaan.
 
 Tehtävien lisääminen ja muokkaaminen tapahtuu AlertDialogin avulla ilman erillisiä navigointinäkymiä.
+
+**Sääominaisuus (OpenWeatherMap API)**
+
+Retrofit on Androidin HTTP-kirjasto, joka muuntaa rajapinnan Kotlin-interfacen muotoon ja hoitaa API-kutsut automaattisesti.
+
+Gson muuntaa API:n palauttaman JSONin suoraan `WeatherResponse`-data classiksi.  
+`@SerializedName` yhdistää JSON-kentät Kotlin-muuttujiin.
+
+**Coroutinet**:
+API-kutsu tehdään `suspend`-funktiolla `viewModelScope.launch`-lohkossa.  
+Kutsu suoritetaan taustalla, joten UI pysyy responsiivisena.  
+Datan saapuessa tila päivittyy ja Compose renderöi näkymän uudelleen.
+
+ViewModel sisältää `WeatherUiState`-tilan:
+
+- `isLoading` – lataus-state
+- `weather` – säädata
+- `error` – virheviesti
+
+Compose seuraa tilaa `collectAsState()`-funktiolla ja päivittyy automaattisesti.
+
+### API-avaimen tallennus
+
+1. Lisää avain `local.properties`-tiedostoon muodossa `WEATHER_API_KEY=oma_api_avain`
+2. Gradle lukee sen `project.findProperty()`
+3. Avain on käytettävissä `BuildConfig.WEATHER_API_KEY`
+4. ViewModel välittää sen Retrofit-kutsuun

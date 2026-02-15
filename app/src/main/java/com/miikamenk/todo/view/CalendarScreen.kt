@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.runtime.collectAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.automirrored.filled.List
@@ -49,6 +50,12 @@ fun CalendarScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.List,
                         contentDescription = "Task List"
+                    )
+                }
+                IconButton(onClick = { navController.navigate("weather") }) {
+                    Icon(
+                        imageVector = Icons.Default.Cloud,
+                        contentDescription = "Go to weather"
                     )
                 }
             }

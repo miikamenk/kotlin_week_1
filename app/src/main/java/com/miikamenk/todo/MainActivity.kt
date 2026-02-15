@@ -12,20 +12,22 @@ import androidx.navigation.compose.rememberNavController
 import com.miikamenk.todo.navigation.AppNavigation
 import com.miikamenk.todo.ui.theme.TodoTheme
 import com.miikamenk.todo.viewmodel.TaskViewModel
+import com.miikamenk.todo.viewmodel.WeatherViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel: TaskViewModel = TaskViewModel()
+            val taskViewModel: TaskViewModel = TaskViewModel()
+            val weatherViewModel: WeatherViewModel = WeatherViewModel()
             val navController = rememberNavController()
             TodoTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavigation(navController, viewModel)
+                    AppNavigation(navController, taskViewModel, weatherViewModel)
                 }
             }
         }
