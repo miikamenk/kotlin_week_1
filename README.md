@@ -47,3 +47,20 @@ Compose seuraa tilaa `collectAsState()`-funktiolla ja päivittyy automaattisesti
 2. Gradle lukee sen `project.findProperty()`
 3. Avain on käytettävissä `BuildConfig.WEATHER_API_KEY`
 4. ViewModel välittää sen Retrofit-kutsuun
+
+## Room-tietokanta
+
+Room tallentaa tehtävät pysyvästi SQLite-tietokantaan.
+
+Rakenne:
+- TaskEntity – tietokantarivi
+- TaskDao – metodit (insert, update, delete, getAll)
+- AppDatabase – tietokantaluokka
+- TaskRepository – välittää datan ViewModelille
+
+Dataliikenne:
+UI → ViewModel → Repository → DAO → Room → SQLite
+
+Kun lisäät tehtävän, se menee Repositoryyn → DAO:hon → tallennetaan tietokantaan. Kun näkymä avataan, DAO palauttaa Flow:n, jonka ViewModel kerää ja UI päivittyy.
+
+Sää ei käytä Room-välimuistia.
